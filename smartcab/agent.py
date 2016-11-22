@@ -69,7 +69,7 @@ class LearningAgent(Agent):
 
         state = (waypoint, inputs['light'], inputs['oncoming'], inputs['left'])
         if self.learning and state not in self.Q:
-                self.Q[state] = {None: 0, 'forward': 0, 'left': 0, 'right': 0}
+                self.Q[state] = {action: 0 for action in self.valid_actions}
 
         return state
 
@@ -98,7 +98,7 @@ class LearningAgent(Agent):
         # If it is not, create a new dictionary for that state
         #   Then, for each action available, set the initial Q-value to 0.0
         if self.learning and state not in self.Q:
-                self.Q[state] = {None: 0, 'forward': 0, 'left': 0, 'right': 0}
+                self.Q[state] = {action: 0 for action in self.valid_actions}
 
         return None
 
@@ -121,7 +121,12 @@ class LearningAgent(Agent):
         action = random.choice(self.valid_actions)
         if self.learning:
             if random.uniform(0, 1) >= self.epsilon:
-                action = max(self.Q[state], key=self.Q[state].get)
+                # Randomize the Choice of the best action in case we have
+                # actions with same Q-values
+                maxQ = self.get_maxQ(state)
+                best_actions = \
+                    [x for x in self.valid_actions if self.Q[state][x] == maxQ]
+                action = random.choice(best_actions)
 
         return action
 
