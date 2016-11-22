@@ -67,11 +67,7 @@ class LearningAgent(Agent):
         #   If it is not, create a dictionary in the Q-table for the current 'state'
         #   For each action, set the Q-value for the state-action pair to 0
 
-        state = (waypoint,
-                 inputs['light'],
-                 inputs['oncoming'],
-                 inputs['left'],
-                 inputs['right'])
+        state = (waypoint, inputs['light'], inputs['oncoming'], inputs['left'])
         if self.learning and state not in self.Q:
                 self.Q[state] = {None: 0, 'forward': 0, 'left': 0, 'right': 0}
 
@@ -141,16 +137,9 @@ class LearningAgent(Agent):
         # When learning, implement the value iteration update rule
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
 
-        # NOTE FOR THE REVIEWER: I'm not sure if "not using 'gamma'"" means
-        # equating 'gamma' to 0 or to 1. I chose the later since we were asked
-        # to implement 'get_maxQ()' and a gamma value of 0 would simply
-        # wipe out that term from the equation.
-        # Having a 'gamma' of 1 also means that long term rewards are
-        # taken into account but since that value is not changing at every step
-        # during a learning trial, we can assume that its impact is minimized?
         if self.learning:
-            self.Q[state][action] = (1 - self.alpha) * self.Q[state][action] \
-                + self.alpha * (reward + self.get_maxQ(state))
+            self.Q[state][action] = \
+                (1 - self.alpha) * self.Q[state][action] + self.alpha * reward
 
         return None
 
@@ -187,7 +176,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning=True, alpha=.1, a=.002)
+    agent = env.create_agent(LearningAgent, learning=True, alpha=.1, a=.008)
 
     ##############
     # Follow the driving agent
